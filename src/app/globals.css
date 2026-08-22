@@ -19,6 +19,7 @@
   --shadow: 0 12px 30px -14px rgba(15, 23, 42, 0.35);
 
   --measure: 46rem;
+  --fig-w: 10.5rem;
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 
   --font-sans: ui-sans-serif, -apple-system, "Segoe UI", "Pretendard",
@@ -483,9 +484,45 @@ p {
 .pub {
   position: relative;
   display: grid;
-  grid-template-columns: 1.75rem 1fr;
-  gap: 0.5rem;
+  /* the figure column is reserved for every entry, figure or not, so the
+     titles stay on one line down the list */
+  grid-template-columns: 1.75rem var(--fig-w) 1fr;
+  gap: 0.5rem 1rem;
+  align-items: start;
   transition: transform 0.28s var(--ease);
+}
+
+.pub-fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  /* the teasers are diagrams drawn on white; keep that ground in both themes */
+  background: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+.pub:hover .pub-fig img {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+/* a full-white block is harsh against the dark theme; settle it slightly
+   and bring it back on hover */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pub-fig img {
+    opacity: 0.86;
+  }
+}
+:root[data-theme="dark"] .pub-fig img {
+  opacity: 0.86;
+}
+:root[data-theme="light"] .pub-fig img {
+  opacity: 1;
+}
+.pub:hover .pub-fig img {
+  opacity: 1;
 }
 
 .pub::before {
@@ -696,6 +733,10 @@ p {
   }
   .pub::before {
     display: none;
+  }
+  .pub-fig:not(:empty) {
+    max-width: 20rem;
+    margin-bottom: 0.65rem;
   }
   .nav-inner {
     gap: 0.85rem;

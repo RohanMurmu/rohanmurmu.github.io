@@ -25,6 +25,24 @@ Equal-contribution asterisks come from each paper's `equalContribution` array.
 Projects, Awards and Technical Skills were removed from the site; they are still in
 `main.tex`, and the old data arrays are recoverable from git history if you want them back.
 
+### Adding a teaser figure to a paper
+
+Drop the full-resolution figure in `paper/`, then generate the shipped copy:
+
+```sh
+node -e '
+import("sharp").then(async ({default: sharp}) => {
+  const i = await sharp("paper/NAME.png").resize({width:480,withoutEnlargement:true})
+    .webp({quality:82,effort:6}).toFile("public/paper/NAME.webp");
+  console.log(i.width, i.height, (i.size/1024).toFixed(0)+"K");
+})'
+```
+
+Then set `figure: { src: "/paper/NAME.webp", width, height }` on that entry in `profile.ts`,
+using the width/height the command printed so the browser reserves the space and the page does
+not shift as the image loads. Entries without a figure keep the column blank, which is what
+keeps every title on the same left edge.
+
 ### Adding a Google Scholar / LinkedIn link
 
 Set `scholar` or `linkedin` in `profile`. Empty string = link hidden.

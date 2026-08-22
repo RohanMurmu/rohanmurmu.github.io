@@ -20,7 +20,7 @@ export const profile = {
   cv: "/cv_YoungminKim.pdf",
   photo: "/face.jpg",
   bio: [
-    "I am an M.S. student at the Kim Jaechul Graduate School of AI, KAIST, advised by Prof. Jong Chul Ye at BISPL. I received my B.S. in Computer Science and Engineering from Korea University in August 2026, graduating early in 3.5 years.",
+    "I am a first-year M.S. student at the Kim Jaechul Graduate School of AI, KAIST, advised by Prof. Jong Chul Ye at BISPL. I received my B.S. in Computer Science and Engineering from Korea University in August 2026, graduating early in 3.5 years.",
     "My research focuses on 3D vision and generative modeling, particularly their applications to robotics and embodied AI. I am broadly interested in geometry-aware visual representations and learning-based approaches to spatial perception and interaction.",],
   interests: [
     "3D Vision",
@@ -64,6 +64,9 @@ export const news: NewsItem[] = [
 
 export type Publication = {
   title: string;
+  /** Teaser shown to the left of the entry. Sized so the browser can
+      reserve the space before it loads. Source PNGs live in ../paper. */
+  figure?: { src: string; width: number; height: number };
   authors: string[];
   equalContribution?: string[];
   venue: string;
@@ -78,6 +81,7 @@ export const publications: Publication[] = [
   {
     title:
       "CRePE: Curved Ray Expectation Positional Encoding for Unified-Camera-Controlled Video Generation",
+    figure: { src: "/paper/crepe.webp", width: 480, height: 308 },
     authors: ["Seonghyun Jin", "Youngmin Kim", "Sunwoo Park", "Jong Chul Ye"],
     equalContribution: ["Seonghyun Jin", "Youngmin Kim", "Sunwoo Park"],
     venue: "arXiv preprint",
@@ -87,6 +91,7 @@ export const publications: Publication[] = [
   {
     title:
       "DMD-augmented Unpaired Neural Schrödinger Bridge for Ultra-Low Field MRI Enhancement",
+    figure: { src: "/paper/dmd.webp", width: 480, height: 230 },
     authors: [
       "Youngmin Kim",
       "Jaeyun Shin",

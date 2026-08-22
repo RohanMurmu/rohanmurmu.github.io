@@ -189,6 +189,41 @@ export default function Home() {
           <ol className="pubs">
             {publications.map((p) => (
               <li className="pub" key={p.title}>
+                <div className="pub-fig">
+                  {p.figure &&
+                    (p.links?.[0] ? (
+                      // convenience click target only — the labelled arXiv chip
+                      // below is the one keyboard and screen-reader users get,
+                      // so this duplicate is kept out of the tab order
+                      <a
+                        href={p.links[0].href}
+                        target="_blank"
+                        rel="noreferrer"
+                        tabIndex={-1}
+                        aria-hidden
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.figure.src}
+                          alt=""
+                          width={p.figure.width}
+                          height={p.figure.height}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </a>
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.figure.src}
+                        alt=""
+                        width={p.figure.width}
+                        height={p.figure.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ))}
+                </div>
                 <div>
                   <div className="pub-title">{p.title}</div>
                   <Authors pub={p} />
