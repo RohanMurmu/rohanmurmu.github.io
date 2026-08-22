@@ -16,7 +16,7 @@ Add a paper or a news item by editing that one file — no component changes nee
 | News feed                  | `news` array (newest first)                          |
 | Publications               | `publications` array (newest first)                  |
 | Experience / education     | `experience`, `education`                            |
-| Which panels exist         | the `tabs` array in [`src/app/page.tsx`](src/app/page.tsx) |
+| Which panels exist         | the `tabs` array in [`src/app/page.tsx`](src/app/page.tsx); the hero sits in the first one |
 | Colours, spacing, fonts    | `src/app/globals.css` (CSS variables at the top)     |
 
 Bolding of your own name in author lists is automatic — it matches the `ME` constant.
@@ -37,10 +37,12 @@ cp ../cv_YoungminKim.pdf public/cv_YoungminKim.pdf
 
 ## How the page behaves
 
-- **Panels, not one long scroll.** [`SectionDeck`](src/components/SectionDeck.tsx) lays the
-  panels side by side on a flex track and slides it horizontally; the viewport animates to the
-  active panel's height. Each panel has a URL hash (`#publications`), so deep links and the
-  browser Back button work.
+- **The whole window slides, not one long scroll.** [`SectionDeck`](src/components/SectionDeck.tsx)
+  owns the shell: a sticky top bar (name, tabs, theme button) is the only thing that stays put,
+  and below it every panel is one viewport wide on a flex track that translates horizontally.
+  The hero lives inside the first panel, so it slides away with everything else. The deck
+  animates to the active panel's height, and each panel has a URL hash (`#publications`), so
+  deep links and the browser Back button work.
 - **Before hydration** the deck renders `.is-static`, which stacks every panel in normal flow.
   With JS off the whole CV is still readable, and nothing is marked `inert`.
 - **Theme toggle** writes `data-theme` on `<html>` and remembers the choice in `localStorage`.

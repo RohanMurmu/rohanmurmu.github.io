@@ -22,8 +22,7 @@ export const profile = {
   photo: "/face.jpg",
   bio: [
     "I am an M.S. student at the Kim Jaechul Graduate School of AI, KAIST, advised by Prof. Jong Chul Ye at BISPL. I received my B.S. in Computer Science and Engineering from Korea University in August 2026, graduating early in 3.5 years.",
-    "My research centers on 3D vision and robotics — in particular, how generative models can serve as controllable world models for embodied agents. I am currently working on camera-controlled video generation, self-distilled 3D reconstruction, and action representations for Vision-Language-Action models. I also work on diffusion-based medical image enhancement.",
-  ],
+    "My research focuses on 3D vision and generative modeling, particularly their applications to robotics and embodied AI. I am broadly interested in geometry-aware visual representations and learning-based approaches to spatial perception and interaction.",],
   interests: [
     "3D Vision",
     "Robotics",

@@ -18,6 +18,85 @@ import {
   LinkedinIcon,
 } from "@/components/Icons";
 
+function Hero() {
+  return (
+    <header className="hero">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className="hero-photo"
+        src={profile.photo}
+        alt={profile.name}
+        width={148}
+        height={148}
+      />
+      <div className="hero-body">
+        <h1>
+          {profile.name}
+          <span className="hero-name-ko">{profile.nameKo}</span>
+        </h1>
+        <p className="hero-role">
+          {profile.role}
+          <br />
+          <strong>{profile.affiliation}</strong>
+          <br />
+          <a
+            className="lab-link"
+            href={profile.labUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {profile.lab}
+          </a>
+          <br />
+          Advised by <strong>Prof. {profile.advisor}</strong>
+        </p>
+
+        <div className="links">
+          <a className="link-chip" href={"mailto:" + profile.email}>
+            <MailIcon />
+            {profile.email}
+          </a>
+          <a
+            className="link-chip"
+            href={profile.github}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <GithubIcon />
+            GitHub
+          </a>
+          {profile.scholar && (
+            <a
+              className="link-chip"
+              href={profile.scholar}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ScholarIcon />
+              Google Scholar
+            </a>
+          )}
+          {profile.linkedin && (
+            <a
+              className="link-chip"
+              href={profile.linkedin}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LinkedinIcon />
+              LinkedIn
+            </a>
+          )}
+          <a className="link-chip" href={profile.cv}>
+            <FileIcon />
+            CV (PDF)
+          </a>
+        </div>
+      </div>
+    </header>
+  );
+}
+
 function Authors({ pub }: { pub: Publication }) {
   const eq = pub.equalContribution ?? [];
   return (
@@ -60,6 +139,7 @@ const tabs: Tab[] = [
     label: "About",
     content: (
       <section className="section">
+        <Hero />
         <h2 className="section-title">About</h2>
         {profile.bio.map((para) => (
           <p key={para.slice(0, 24)}>{para}</p>
@@ -160,100 +240,18 @@ export default function Home() {
     <>
       <Interactions />
 
-      <nav className="nav">
-        <div className="nav-inner">
-          <a className="nav-name" href="#about">
-            {profile.name}
-          </a>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <SectionDeck
+        brand={profile.name}
+        toolbar={<ThemeToggle />}
+        tabs={tabs}
+      />
 
-      <main className="wrap">
-        <header className="hero">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="hero-photo"
-            src={profile.photo}
-            alt={profile.name}
-            width={148}
-            height={148}
-          />
-          <div className="hero-body">
-            <h1>
-              {profile.name}
-              <span className="hero-name-ko">{profile.nameKo}</span>
-            </h1>
-            <p className="hero-role">
-              {profile.role}
-              <br />
-              <strong>{profile.affiliation}</strong>
-              <br />
-              <a
-                className="lab-link"
-                href={profile.labUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {profile.lab}
-              </a>
-              <br />
-              Advised by <strong>Prof. {profile.advisor}</strong>
-            </p>
-
-            <div className="links">
-              <a className="link-chip" href={"mailto:" + profile.email}>
-                <MailIcon />
-                {profile.email}
-              </a>
-              <a
-                className="link-chip"
-                href={profile.github}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <GithubIcon />
-                GitHub
-              </a>
-              {profile.scholar && (
-                <a
-                  className="link-chip"
-                  href={profile.scholar}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ScholarIcon />
-                  Google Scholar
-                </a>
-              )}
-              {profile.linkedin && (
-                <a
-                  className="link-chip"
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <LinkedinIcon />
-                  LinkedIn
-                </a>
-              )}
-              <a className="link-chip" href={profile.cv}>
-                <FileIcon />
-                CV (PDF)
-              </a>
-            </div>
-          </div>
-        </header>
-
-        <SectionDeck tabs={tabs} />
-
-        <footer className="footer">
-          <span>
-            © {profile.name} · {profile.location}
-          </span>
-          <span>Built with Next.js · Hosted on GitHub Pages</span>
-        </footer>
-      </main>
+      <footer className="footer">
+        <span>
+          © {profile.name} · {profile.location}
+        </span>
+        <span>Built with Next.js · Hosted on GitHub Pages</span>
+      </footer>
     </>
   );
 }

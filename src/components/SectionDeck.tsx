@@ -12,14 +12,22 @@ import {
 export type Tab = { id: string; label: string; content: ReactNode };
 
 /**
- * Horizontal tab deck. Panels sit side by side on a flex track that
- * slides; the viewport animates to the active panel's height so the page
- * never jumps.
+ * Full-window horizontal deck. Panels are each one viewport wide and sit
+ * side by side on a flex track that slides, so switching tabs moves the
+ * whole screen rather than just a column. Only the top bar stays put.
  *
  * Before hydration (and with JS off) the deck renders `.is-static`, which
  * stacks every panel in normal flow — the whole CV stays readable.
  */
-export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
+export default function SectionDeck({
+  brand,
+  toolbar,
+  tabs,
+}: {
+  brand: string;
+  toolbar?: ReactNode;
+  tabs: Tab[];
+}) {
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState(false);
   const [height, setHeight] = useState<number>();
@@ -28,10 +36,11 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLElement>(null);
 
   // Open on the panel named by the URL hash, then switch on the slider.
   // Keep listening: the hash can also change without a document load, via
-  // back/forward or a link elsewhere on the page pointing at a panel.
+  // back/forward or a link elsewhere pointing at a panel.
   useEffect(() => {
     const fromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
@@ -43,6 +52,21 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
     window.addEventListener("hashchange", fromHash);
     return () => window.removeEventListener("hashchange", fromHash);
   }, [tabs]);
+
+  // Publish the bar height so a panel can fill exactly the rest of the window.
+  useLayoutEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const publish = () =>
+      document.documentElement.style.setProperty(
+        "--bar-h",
+        `${bar.getBoundingClientRect().height}px`
+      );
+    publish();
+    const ro = new ResizeObserver(publish);
+    ro.observe(bar);
+    return () => ro.disconnect();
+  }, []);
 
   // Track the active panel's height so the viewport can animate to it.
   useLayoutEffect(() => {
@@ -80,7 +104,6 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
     const ro = new ResizeObserver(place);
     if (tabsRef.current) ro.observe(tabsRef.current);
     window.addEventListener("resize", place);
-    // webfonts can land after first paint and change tab widths
     document.fonts?.ready.then(place).catch(() => {});
     return () => {
       ro.disconnect();
@@ -97,10 +120,9 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
 
       history.replaceState(null, "", `#${tabs[next].id}`);
 
-      // if the visitor has scrolled past the tab row, bring it back
-      const bar = tabsRef.current;
-      if (bar && bar.getBoundingClientRect().top < 0) {
-        bar.scrollIntoView({ behavior: "smooth", block: "start" });
+      // the incoming panel starts at its own top, so meet it there
+      if (window.scrollY > 0) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     },
     [tabs]
@@ -121,37 +143,55 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
 
   return (
     <>
-      <div
-        className="tabs"
-        role="tablist"
-        aria-label="Sections"
-        ref={tabsRef}
-        onKeyDown={onKeyDown}
-      >
-        {tabs.map((t, i) => (
+      <header className="bar" ref={barRef}>
+        <div className="bar-inner">
           <button
-            key={t.id}
             type="button"
-            role="tab"
-            id={`tab-${t.id}`}
-            aria-selected={i === active}
-            aria-controls={`panel-${t.id}`}
-            tabIndex={i === active ? 0 : -1}
-            className={"tab" + (i === active ? " is-active" : "")}
-            ref={(el) => {
-              tabRefs.current[i] = el;
-            }}
-            onClick={() => go(i)}
+            className="bar-name"
+            onClick={() => go(0)}
+            aria-label={`${brand} — first panel`}
           >
-            {t.label}
+            {brand}
           </button>
-        ))}
-        <span
-          className={"tab-ink" + (ready ? " is-ready" : "")}
-          style={{ width: ink.w, transform: `translate(${ink.x}px, ${ink.y}px)` }}
-          aria-hidden
-        />
-      </div>
+
+          <div
+            className="tabs"
+            role="tablist"
+            aria-label="Sections"
+            ref={tabsRef}
+            onKeyDown={onKeyDown}
+          >
+            {tabs.map((t, i) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                id={`tab-${t.id}`}
+                aria-selected={i === active}
+                aria-controls={`panel-${t.id}`}
+                tabIndex={i === active ? 0 : -1}
+                className={"tab" + (i === active ? " is-active" : "")}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                onClick={() => go(i)}
+              >
+                {t.label}
+              </button>
+            ))}
+            <span
+              className={"tab-ink" + (ready ? " is-ready" : "")}
+              style={{
+                width: ink.w,
+                transform: `translate(${ink.x}px, ${ink.y}px)`,
+              }}
+              aria-hidden
+            />
+          </div>
+
+          {toolbar}
+        </div>
+      </header>
 
       <div
         className={"deck" + (ready ? "" : " is-static")}
@@ -177,7 +217,7 @@ export default function SectionDeck({ tabs }: { tabs: Tab[] }) {
               }}
               inert={ready && i !== active}
             >
-              {t.content}
+              <div className="slide-inner">{t.content}</div>
             </div>
           ))}
         </div>
