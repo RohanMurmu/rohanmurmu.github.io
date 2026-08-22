@@ -20,10 +20,19 @@ import {
 const NAV = [
   ["About", "#about"],
   ["News", "#news"],
-  ["Publications", "#publications"],
+  ["Papers", "#publications"],
   ["Experience", "#experience"],
   ["Education", "#education"],
 ];
+
+/* The name renders sans-bold with the surname as a serif-italic gradient
+   accent, so split on the last space. */
+const nameParts = (() => {
+  const i = profile.name.lastIndexOf(" ");
+  return i === -1
+    ? { first: profile.name, last: "" }
+    : { first: profile.name.slice(0, i), last: profile.name.slice(i + 1) };
+})();
 
 function Authors({ pub }: { pub: Publication }) {
   const eq = pub.equalContribution ?? [];
@@ -40,13 +49,23 @@ function Authors({ pub }: { pub: Publication }) {
   );
 }
 
+function SectionTitle({ no, children }: { no: string; children: string }) {
+  return (
+    <h2 className="section-title">
+      <span className="section-no">{no}</span>
+      {children}
+      <span className="section-rule" aria-hidden />
+    </h2>
+  );
+}
+
 function EntryList({ items }: { items: typeof experience }) {
   return (
     <div className="entries">
       {items.map((e) => (
         <div className="entry" key={e.period + e.org}>
           <div className="entry-period">{e.period}</div>
-          <div>
+          <div className="entry-body">
             <div className="entry-title">{e.title}</div>
             <div className="entry-sub">
               {e.org} · {e.location}
@@ -66,10 +85,25 @@ export default function Home() {
     <>
       <Interactions />
 
+      {/* fixed background: aurora glow + dot grid + film grain */}
+      <div className="atmosphere" aria-hidden>
+        <div className="aurora aurora-a" />
+        <div className="aurora aurora-b" />
+        <div className="grid-layer" />
+        <div className="noise-layer" />
+      </div>
+
       <nav className="nav">
         <div className="nav-inner">
           <a className="nav-name" href="#top">
-            {profile.name}
+            {nameParts.last ? (
+              <>
+                {nameParts.first[0]}
+                <em>{nameParts.last[0]}</em>
+              </>
+            ) : (
+              profile.name
+            )}
           </a>
           {NAV.map(([label, href]) => (
             <a key={href} href={href}>
@@ -84,16 +118,13 @@ export default function Home() {
       <main className="wrap" id="top">
         {/* ---------- hero ---------- */}
         <header className="hero">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="hero-photo"
-            src={profile.photo}
-            alt={profile.name}
-            width={148}
-            height={148}
-          />
           <div className="hero-body">
-            <h1>{profile.name}</h1>
+            <p className="hero-kicker">
+              {profile.interests.slice(0, 3).join(" · ")}
+            </p>
+            <h1 className="hero-name">
+              {nameParts.first} {nameParts.last && <em>{nameParts.last}</em>}
+            </h1>
             <p className="hero-role">
               {profile.role}
               <br />
@@ -133,7 +164,7 @@ export default function Home() {
                   rel="noreferrer"
                 >
                   <ScholarIcon />
-                  Google Scholar
+                  Scholar
                 </a>
               )}
               {profile.linkedin && (
@@ -153,11 +184,27 @@ export default function Home() {
               </a>
             </div>
           </div>
+
+          <figure className="hero-figure">
+            <span className="hero-photo-box">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="hero-photo"
+                src={profile.photo}
+                alt={profile.name}
+                width={168}
+                height={168}
+              />
+            </span>
+            <figcaption className="hero-caption">
+              fig. 0 — {profile.location}
+            </figcaption>
+          </figure>
         </header>
 
         {/* ---------- about ---------- */}
         <section className="section" id="about">
-          <h2 className="section-title">About</h2>
+          <SectionTitle no="01">About</SectionTitle>
           {profile.bio.map((para) => (
             <p key={para.slice(0, 24)}>{para}</p>
           ))}
@@ -172,7 +219,7 @@ export default function Home() {
 
         {/* ---------- news ---------- */}
         <section className="section" id="news">
-          <h2 className="section-title">News</h2>
+          <SectionTitle no="02">News</SectionTitle>
           <ul className="news">
             {news.map((n) => (
               <li key={n.date + n.body.slice(0, 16)}>
@@ -185,7 +232,7 @@ export default function Home() {
 
         {/* ---------- publications ---------- */}
         <section className="section" id="publications">
-          <h2 className="section-title">Publications</h2>
+          <SectionTitle no="03">Publications</SectionTitle>
           <ol className="pubs">
             {publications.map((p) => (
               <li className="pub" key={p.title}>
@@ -228,7 +275,8 @@ export default function Home() {
                   <div className="pub-title">{p.title}</div>
                   <Authors pub={p} />
                   <div className="pub-venue">
-                    <em>{p.venue}</em>, {p.year}
+                    <em>{p.venue}</em>
+                    <span className="pub-year">{p.year}</span>
                   </div>
                   {p.links && p.links.length > 0 && (
                     <div className="pub-links">
@@ -258,21 +306,26 @@ export default function Home() {
 
         {/* ---------- experience ---------- */}
         <section className="section" id="experience">
-          <h2 className="section-title">Research Experience</h2>
+          <SectionTitle no="04">Research Experience</SectionTitle>
           <EntryList items={experience} />
         </section>
 
         {/* ---------- education ---------- */}
         <section className="section" id="education">
-          <h2 className="section-title">Education</h2>
+          <SectionTitle no="05">Education</SectionTitle>
           <EntryList items={education} />
         </section>
 
         <footer className="footer">
-          <span>
-            © {profile.name} · {profile.location}
-          </span>
-          <span>Built with Next.js · Hosted on GitHub Pages</span>
+          <div className="footer-mark" aria-hidden>
+            {profile.name}
+          </div>
+          <div className="footer-row">
+            <span>
+              © {profile.name} · {profile.location}
+            </span>
+            <span>Built with Next.js · Hosted on GitHub Pages</span>
+          </div>
         </footer>
       </main>
     </>
