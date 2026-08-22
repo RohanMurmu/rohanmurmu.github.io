@@ -10,6 +10,7 @@ import {
   ME,
   type Publication,
 } from "@/data/profile";
+import Interactions from "@/components/Interactions";
 import {
   MailIcon,
   GithubIcon,
@@ -47,6 +48,7 @@ export default function Home() {
 
   return (
     <>
+      <Interactions />
       <nav className="nav">
         <div className="nav-inner">
           <a className="nav-name" href="#top">
@@ -58,6 +60,7 @@ export default function Home() {
             </a>
           ))}
         </div>
+        <div className="nav-progress" aria-hidden />
       </nav>
 
       <main className="wrap" id="top">

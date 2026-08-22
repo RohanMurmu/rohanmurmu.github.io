@@ -439,3 +439,277 @@ p {
     font-size: 11pt;
   }
 }
+
+/* ============================================================
+   Pointer interactions
+   Everything below is decoration only — the page is fully
+   readable and navigable with JS off and motion reduced.
+   ============================================================ */
+
+/* --- hero: cursor-tracked spotlight --- */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -25% -12%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    transparent 62%
+  );
+}
+
+.hero.is-hot::before {
+  opacity: 1;
+}
+
+/* --- photo --- */
+.hero-photo {
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1),
+    box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.hero-photo:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* --- link chips --- */
+.link-chip {
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1),
+    color 0.22s ease, border-color 0.22s ease, background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.link-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.link-chip svg {
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.link-chip:hover svg {
+  transform: scale(1.15);
+}
+
+/* --- nav: underline grows from the left, active section stays lit --- */
+.nav a:not(.nav-name) {
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.22s ease;
+}
+
+.nav a:not(.nav-name)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.nav a:not(.nav-name):hover::after,
+.nav a.is-active::after {
+  transform: scaleX(1);
+}
+
+.nav a.is-active {
+  color: var(--accent);
+}
+
+/* scroll progress hairline riding the bottom of the sticky nav */
+.nav-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    var(--accent)
+  );
+  pointer-events: none;
+}
+
+/* --- publications --- */
+.pub {
+  position: relative;
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.pub::after {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.pub:hover {
+  transform: translateX(4px);
+}
+
+.pub:hover::after {
+  transform: scaleY(1);
+}
+
+.pub-title {
+  transition: color 0.25s ease;
+}
+
+.pub:hover .pub-title {
+  color: var(--accent);
+}
+
+.pub-link {
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1),
+    color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.pub-link:hover {
+  transform: translateY(-1px);
+  background: var(--accent-soft);
+}
+
+/* --- entry rows (projects / experience / education / awards) --- */
+.entry {
+  position: relative;
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.entry::after {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.entry:hover {
+  transform: translateX(4px);
+}
+
+.entry:hover::after {
+  transform: scaleY(1);
+}
+
+.entry-title {
+  transition: color 0.25s ease;
+}
+
+.entry:hover .entry-title {
+  color: var(--accent);
+}
+
+.entry-period {
+  transition: color 0.25s ease;
+}
+
+.entry:hover .entry-period {
+  color: var(--text-muted);
+}
+
+/* --- interest tags --- */
+.tag {
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1),
+    background 0.2s ease, border-color 0.2s ease;
+}
+
+.tag:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* --- news rows --- */
+.news li {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.news li:hover {
+  transform: translateX(3px);
+}
+
+.news li:hover .news-date {
+  color: var(--accent);
+}
+
+.news-date {
+  transition: color 0.25s ease;
+}
+
+/* --- scroll reveal (class only added by JS, so no-JS shows everything) --- */
+.js-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.js-reveal.in-view {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* --- accessibility: honour the OS "reduce motion" setting --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero::before {
+    display: none;
+  }
+}
+
+/* --- coarse pointers (touch): drop hover-only affordances --- */
+@media (hover: none) {
+  .pub:hover,
+  .entry:hover,
+  .news li:hover {
+    transform: none;
+  }
+
+  .hero::before {
+    display: none;
+  }
+}

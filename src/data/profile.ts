@@ -11,7 +11,7 @@ export const profile = {
   lab: "BioImaging, Signal Processing & machine Learning Lab (BISPL)",
   advisor: "Jong Chul Ye",
   location: "Seoul, Korea",
-  email: "ggred0123@gmail.com",
+  email: "zeromin03@kaist.ac.kr",
   github: "https://github.com/ggred0123",
   // Fill these in when you have them, or delete the line to hide the link.
   scholar: "",
