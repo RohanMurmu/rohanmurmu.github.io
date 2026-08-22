@@ -13,33 +13,68 @@ export default function Interactions() {
     const finePointer = window.matchMedia("(hover: hover)").matches;
     const cleanups: (() => void)[] = [];
 
-    // ---- 1. cursor-tracked spotlight behind the hero -------------------
-    const hero = document.querySelector<HTMLElement>(".hero");
-    if (hero && finePointer && !motionQuery.matches) {
+    // ---- 1. cursor light, across the whole page ----------------------
+    // The layer is fixed to the viewport, so clientX/clientY are exactly the
+    // coordinates it wants. Rather than writing the pointer position straight
+    // through, ease toward it each frame: the light trails a little instead of
+    // snapping, which is what makes it read as a light rather than a cursor.
+    const glow = document.querySelector<HTMLElement>(".cursor-glow");
+    if (glow && finePointer && !motionQuery.matches) {
+      let tx = 0, ty = 0;      // where the pointer is
+      let cx = 0, cy = 0;      // where the light is
       let frame = 0;
-      const onMove = (e: PointerEvent) => {
-        if (frame) return;
-        frame = requestAnimationFrame(() => {
-          frame = 0;
-          const r = hero.getBoundingClientRect();
-          hero.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          hero.style.setProperty("--my", `${e.clientY - r.top}px`);
-        });
-      };
-      const onEnter = () => hero.classList.add("is-hot");
-      const onLeave = () => {
-        hero.classList.remove("is-hot");
-        if (frame) cancelAnimationFrame(frame);
-        frame = 0;
+      let placed = false;
+
+      const step = () => {
+        // exponential ease; ~0.12 keeps the lag perceptible but never sluggish
+        cx += (tx - cx) * 0.12;
+        cy += (ty - cy) * 0.12;
+
+        // Exponential easing only approaches the target, so snap the last
+        // sub-pixel and stop. Otherwise the loop keeps running long after the
+        // movement stops being visible — and on a throttled frame clock that
+        // tail can last seconds.
+        const settled = Math.hypot(tx - cx, ty - cy) < 0.6;
+        if (settled) {
+          cx = tx;
+          cy = ty;
+        }
+        glow.style.setProperty("--gx", `${cx.toFixed(1)}px`);
+        glow.style.setProperty("--gy", `${cy.toFixed(1)}px`);
+        frame = settled ? 0 : requestAnimationFrame(step);
       };
 
-      hero.addEventListener("pointermove", onMove);
-      hero.addEventListener("pointerenter", onEnter);
-      hero.addEventListener("pointerleave", onLeave);
+      const onMove = (e: PointerEvent) => {
+        tx = e.clientX;
+        ty = e.clientY;
+        if (!placed) {
+          // first sighting: drop the light straight onto the pointer, then
+          // fade it in, so it does not streak across from the corner
+          placed = true;
+          cx = tx;
+          cy = ty;
+          glow.style.setProperty("--gx", `${cx}px`);
+          glow.style.setProperty("--gy", `${cy}px`);
+          glow.classList.add("is-live");
+        }
+        if (!frame) frame = requestAnimationFrame(step);
+      };
+
+      const onLeave = (e: PointerEvent) => {
+        // relatedTarget is null only when the pointer actually left the window
+        if (e.relatedTarget === null) glow.classList.remove("is-live");
+      };
+      const onEnter = () => {
+        if (placed) glow.classList.add("is-live");
+      };
+
+      window.addEventListener("pointermove", onMove, { passive: true });
+      document.addEventListener("pointerout", onLeave);
+      document.addEventListener("pointerover", onEnter);
       cleanups.push(() => {
-        hero.removeEventListener("pointermove", onMove);
-        hero.removeEventListener("pointerenter", onEnter);
-        hero.removeEventListener("pointerleave", onLeave);
+        window.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerout", onLeave);
+        document.removeEventListener("pointerover", onEnter);
         if (frame) cancelAnimationFrame(frame);
       });
     }

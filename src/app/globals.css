@@ -24,6 +24,12 @@
   --grid-opacity: 0.05;
   --noise-opacity: 0.028;
 
+  /* Cursor light: a tight core over a wide halo. On the near-white ground a
+     plain accent bloom reads best — additive blending would just wash out. */
+  --glow-core: color-mix(in srgb, var(--accent) 13%, transparent);
+  --glow-halo: color-mix(in srgb, var(--accent-2) 7%, transparent);
+  --glow-blend: normal;
+
   --measure: 46rem;
   --fig-w: 11rem;
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
@@ -55,6 +61,11 @@
     --aurora-opacity: 0.3;
     --grid-opacity: 0.07;
     --noise-opacity: 0.045;
+
+    /* on the dark ground the light is white and genuinely additive */
+    --glow-core: rgba(255, 255, 255, 0.085);
+    --glow-halo: color-mix(in srgb, var(--accent) 20%, transparent);
+    --glow-blend: plus-lighter;
   }
 }
 
@@ -74,6 +85,11 @@
   --aurora-opacity: 0.3;
   --grid-opacity: 0.07;
   --noise-opacity: 0.045;
+
+  /* on the dark ground the light is white and genuinely additive */
+  --glow-core: rgba(255, 255, 255, 0.085);
+  --glow-halo: color-mix(in srgb, var(--accent) 20%, transparent);
+  --glow-blend: plus-lighter;
 }
 
 /* Only while the toggle is mid-flight: cross-fade every colour at once.
@@ -219,6 +235,39 @@ p {
     black 25%,
     transparent 78%
   );
+}
+
+/* Cursor light. Lives inside .atmosphere, which is fixed to the viewport, so
+   clientX/clientY map straight onto it and the light stays under the pointer
+   however far the page has scrolled.
+
+   Two stacked gradients rather than one: a small bright core for presence and
+   a wide faint halo for falloff. Interactions.tsx eases --gx/--gy toward the
+   pointer instead of snapping, so the light trails slightly behind it. */
+.cursor-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  mix-blend-mode: var(--glow-blend);
+  background:
+    radial-gradient(
+      220px circle at var(--gx, 50%) var(--gy, 50%),
+      var(--glow-core),
+      transparent 68%
+    ),
+    radial-gradient(
+      600px circle at var(--gx, 50%) var(--gy, 50%),
+      var(--glow-halo),
+      transparent 72%
+    );
+}
+
+/* raised only once the pointer has moved, so it never blooms at 50%/50% on
+   load and never lingers after the cursor leaves the window */
+.cursor-glow.is-live {
+  opacity: 1;
 }
 
 .noise-layer {
@@ -452,51 +501,9 @@ p {
   padding: 8.25rem 0 4.25rem;
 }
 
-/* cursor-tracked spotlight (driven by Interactions.tsx) */
-.hero::before {
-  content: "";
-  position: absolute;
-  /* Vertical bleed only. Any horizontal bleed widens the document and
-     gives narrow viewports a stray sideways scrollbar, even at opacity 0. */
-  inset: -20% 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  background: radial-gradient(
-    340px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--accent) 11%, transparent),
-    transparent 65%
-  );
-}
-
-.hero.is-hot::before {
-  opacity: 1;
-}
-
 .hero-body {
   flex: 1 1 auto;
   min-width: 0;
-}
-
-.hero-kicker {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  margin: 0 0 1.1rem;
-}
-.hero-kicker::before {
-  content: "";
-  display: inline-block;
-  width: 1.6rem;
-  height: 1px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  vertical-align: middle;
-  margin-right: 0.65rem;
-  margin-top: -2px;
 }
 
 .hero-name {
@@ -1135,7 +1142,7 @@ p {
     opacity: 1;
     transform: none;
   }
-  .hero::before {
+  .cursor-glow {
     display: none;
   }
 }
@@ -1146,7 +1153,7 @@ p {
   .news li:hover {
     transform: none;
   }
-  .hero::before {
+  .cursor-glow {
     display: none;
   }
 }

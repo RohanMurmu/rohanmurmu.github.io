@@ -91,6 +91,7 @@ export default function Home() {
         <div className="aurora aurora-b" />
         <div className="grid-layer" />
         <div className="noise-layer" />
+        <div className="cursor-glow" />
       </div>
 
       <nav className="nav">
@@ -119,9 +120,6 @@ export default function Home() {
         {/* ---------- hero ---------- */}
         <header className="hero">
           <div className="hero-body">
-            <p className="hero-kicker">
-              {profile.interests.slice(0, 3).join(" · ")}
-            </p>
             <h1 className="hero-name">{profile.name}</h1>
             <p className="hero-role">
               {profile.role}
