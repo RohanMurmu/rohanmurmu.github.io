@@ -192,9 +192,6 @@ export default function Home() {
                 height={168}
               />
             </span>
-            <figcaption className="hero-caption">
-              fig. 0 — {profile.location}
-            </figcaption>
           </figure>
         </header>
 
