@@ -5,7 +5,6 @@
 
 export const profile = {
   name: "Youngmin Kim",
-  nameKo: "김영민",
   role: "M.S. Student in Artificial Intelligence",
   affiliation: "Kim Jaechul Graduate School of AI, KAIST",
   lab: "BioImaging, Signal Processing & machine Learning Lab (BISPL)",

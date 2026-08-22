@@ -16,7 +16,7 @@ Add a paper or a news item by editing that one file — no component changes nee
 | News feed                  | `news` array (newest first)                          |
 | Publications               | `publications` array (newest first)                  |
 | Experience / education     | `experience`, `education`                            |
-| Which panels exist         | the `tabs` array in [`src/app/page.tsx`](src/app/page.tsx); the hero sits in the first one |
+| Which sections exist       | [`src/app/page.tsx`](src/app/page.tsx)               |
 | Colours, spacing, fonts    | `src/app/globals.css` (CSS variables at the top)     |
 
 Bolding of your own name in author lists is automatic — it matches the `ME` constant.
@@ -37,22 +37,25 @@ cp ../cv_YoungminKim.pdf public/cv_YoungminKim.pdf
 
 ## How the page behaves
 
-- **The whole window slides, not one long scroll.** [`SectionDeck`](src/components/SectionDeck.tsx)
-  owns the shell: a sticky top bar (name, tabs, theme button) is the only thing that stays put,
-  and below it every panel is one viewport wide on a flex track that translates horizontally.
-  The hero lives inside the first panel, so it slides away with everything else. The deck
-  animates to the active panel's height, and each panel has a URL hash (`#publications`), so
-  deep links and the browser Back button work.
-- **Before hydration** the deck renders `.is-static`, which stacks every panel in normal flow.
-  With JS off the whole CV is still readable, and nothing is marked `inert`.
+- **One vertical page.** All five sections stack and scroll normally. The sticky nav holds
+  anchor links whose underline tracks the section currently in view, plus a hairline that shows
+  scroll progress. Sections fade in as they scroll past.
+- **Reveal is fail-safe.** The observer marks the section that came into view *and every section
+  above it*, so a deep link or a fast jump never strands a skipped section at `opacity: 0`. The
+  `.js-reveal` class is added by JS, not the markup, so nothing is hidden with JS off.
 - **Theme toggle** writes `data-theme` on `<html>` and remembers the choice in `localStorage`.
   A tiny inline script in [`layout.tsx`](src/app/layout.tsx) applies it before first paint, so
   there is no flash of the wrong theme. With no stored choice the OS preference wins.
 - **Reduced motion** collapses every transition and disables the hero spotlight; touch pointers
   skip the hover-only affordances.
 
+The name is set in `--font-display` (a tight grotesque) rather than the body face; both are
+system stacks, so there are no webfonts to load.
+
 Watch out for anything that bleeds outside the hero horizontally (the cursor spotlight used to):
 it widens the document and narrow viewports gain a stray sideways scrollbar, even at `opacity: 0`.
+`overflow-x: clip` on the root does **not** fix that — it propagates to the viewport and the page
+still scrolls sideways. Keep the bleed vertical instead.
 
 ## Local development
 
