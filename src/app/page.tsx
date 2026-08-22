@@ -25,8 +25,8 @@ const NAV = [
   ["Education", "#education"],
 ];
 
-/* The name renders sans-bold with the surname as a serif-italic gradient
-   accent, so split on the last space. */
+/* Split on the last space: the nav monogram still sets the surname initial
+   apart, even though the hero now renders the full name in one weight. */
 const nameParts = (() => {
   const i = profile.name.lastIndexOf(" ");
   return i === -1
@@ -122,9 +122,7 @@ export default function Home() {
             <p className="hero-kicker">
               {profile.interests.slice(0, 3).join(" · ")}
             </p>
-            <h1 className="hero-name">
-              {nameParts.first} {nameParts.last && <em>{nameParts.last}</em>}
-            </h1>
+            <h1 className="hero-name">{profile.name}</h1>
             <p className="hero-role">
               {profile.role}
               <br />
@@ -317,9 +315,6 @@ export default function Home() {
         </section>
 
         <footer className="footer">
-          <div className="footer-mark" aria-hidden>
-            {profile.name}
-          </div>
           <div className="footer-row">
             <span>
               © {profile.name} · {profile.location}
