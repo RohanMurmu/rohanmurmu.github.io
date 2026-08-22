@@ -29,6 +29,8 @@
   --glow-core: color-mix(in srgb, var(--accent) 13%, transparent);
   --glow-halo: color-mix(in srgb, var(--accent-2) 7%, transparent);
   --glow-blend: normal;
+  --glow-core-r: 130px;
+  --glow-halo-r: 360px;
 
   --measure: 46rem;
   --fig-w: 11rem;
@@ -253,12 +255,12 @@ p {
   mix-blend-mode: var(--glow-blend);
   background:
     radial-gradient(
-      220px circle at var(--gx, 50%) var(--gy, 50%),
+      var(--glow-core-r) circle at var(--gx, 50%) var(--gy, 50%),
       var(--glow-core),
       transparent 68%
     ),
     radial-gradient(
-      600px circle at var(--gx, 50%) var(--gy, 50%),
+      var(--glow-halo-r) circle at var(--gx, 50%) var(--gy, 50%),
       var(--glow-halo),
       transparent 72%
     );
