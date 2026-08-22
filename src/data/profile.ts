@@ -91,7 +91,7 @@ export const publications: Publication[] = [
   {
     title:
       "DMD-augmented Unpaired Neural Schrödinger Bridge for Ultra-Low Field MRI Enhancement",
-    figure: { src: "/paper/dmd.webp", width: 480, height: 230 },
+    figure: { src: "/paper/dmd.webp", width: 480, height: 244 },
     authors: [
       "Youngmin Kim",
       "Jaeyun Shin",
@@ -110,6 +110,7 @@ export const publications: Publication[] = [
   {
     title:
       "Ultra-Low-Field Brain MRI Enhancement using Resfusion and Residual Artifact Suppression Network",
+    figure: { src: "/paper/ultra.webp", width: 480, height: 268 },
     authors: [
       "Youngmin Kim",
       "Jeongchan Kim",
@@ -125,6 +126,7 @@ export const publications: Publication[] = [
   {
     title:
       "Performance Analysis of Kubernetes Traffic Scheduling Algorithms in Homogeneous and Heterogeneous Environments",
+    figure: { src: "/paper/kuber.webp", width: 480, height: 351 },
     authors: ["Youngmin Kim", "Hogeon Park", "Heonchang Yu"],
     venue: "Korea Computer Congress (KCC)",
     year: "2025",
