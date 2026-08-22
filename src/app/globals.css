@@ -1,22 +1,36 @@
-/* ---------- tokens ---------- */
+/* ============================================================
+   Theme tokens
+
+   Light is the base. Dark is applied twice: once for viewers whose
+   OS asks for it (unless they explicitly chose light), and once for
+   an explicit choice, so the toggle wins in both directions.
+   ============================================================ */
 :root {
+  color-scheme: light;
+
   --bg: #ffffff;
-  --bg-subtle: #f7f7f8;
+  --bg-subtle: #f6f6f8;
   --text: #1a1a1a;
   --text-muted: #6b6b70;
   --text-faint: #8e8e94;
   --border: #e4e4e7;
   --accent: #2563eb;
   --accent-soft: #eff4ff;
+  --shadow: 0 12px 30px -14px rgba(15, 23, 42, 0.35);
 
   --measure: 46rem;
+  --gutter: 1rem;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --slide-t: 520ms;
+
   --font-sans: ui-sans-serif, -apple-system, "Segoe UI", "Pretendard",
     "Apple SD Gothic Neo", "Noto Sans KR", Helvetica, Arial, sans-serif;
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --bg: #101012;
     --bg-subtle: #17171a;
     --text: #ececee;
@@ -25,7 +39,31 @@
     --border: #2a2a2f;
     --accent: #7ba2f7;
     --accent-soft: #1a2136;
+    --shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.7);
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101012;
+  --bg-subtle: #17171a;
+  --text: #ececee;
+  --text-muted: #a0a0a8;
+  --text-faint: #78787f;
+  --border: #2a2a2f;
+  --accent: #7ba2f7;
+  --accent-soft: #1a2136;
+  --shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.7);
+}
+
+/* Only while the toggle is mid-flight: cross-fade every colour at once.
+   Kept off the rest of the time so hover states stay snappy. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 420ms ease, color 420ms ease,
+    border-color 420ms ease, fill 420ms ease, box-shadow 420ms ease !important;
 }
 
 /* ---------- base ---------- */
@@ -37,8 +75,6 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
 }
 
 body {
@@ -61,8 +97,7 @@ a:hover {
 }
 
 h1,
-h2,
-h3 {
+h2 {
   line-height: 1.25;
   margin: 0;
   font-weight: 600;
@@ -70,6 +105,12 @@ h3 {
 
 p {
   margin: 0 0 1rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* ---------- layout ---------- */
@@ -80,8 +121,7 @@ p {
 }
 
 .section {
-  padding: 2.75rem 0;
-  border-top: 1px solid var(--border);
+  padding: 0 0 1rem;
 }
 
 .section-title {
@@ -93,11 +133,11 @@ p {
   margin-bottom: 1.5rem;
 }
 
-/* ---------- nav ---------- */
+/* ---------- top bar ---------- */
 .nav {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
@@ -106,11 +146,10 @@ p {
 .nav-inner {
   max-width: var(--measure);
   margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   display: flex;
-  gap: 1.25rem;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .nav-name {
@@ -122,21 +161,106 @@ p {
   text-decoration: none;
 }
 
-.nav a:not(.nav-name) {
-  font-size: 0.875rem;
+/* ---------- theme toggle ---------- */
+.theme-toggle {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-subtle);
   color: var(--text-muted);
+  transition: color 0.25s ease, border-color 0.25s ease,
+    background 0.25s ease, transform 0.25s var(--ease);
 }
-.nav a:not(.nav-name):hover {
+
+.theme-toggle:hover {
   color: var(--accent);
-  text-decoration: none;
+  border-color: var(--accent);
+  transform: rotate(-18deg);
+}
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
+  transition: opacity 0.35s ease, transform 0.45s var(--ease);
+}
+
+/* light is the base: offer the moon */
+.theme-toggle .icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+.theme-toggle .icon-moon {
+  opacity: 1;
+  transform: none;
+}
+
+/* dark by OS preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+    opacity: 1;
+    transform: none;
+  }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+  }
+}
+
+/* explicit choice always wins over the media query above */
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  opacity: 1;
+  transform: none;
+}
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  opacity: 1;
+  transform: none;
 }
 
 /* ---------- hero ---------- */
 .hero {
+  position: relative;
+  isolation: isolate;
   display: flex;
   gap: 2rem;
   align-items: flex-start;
-  padding: 3.5rem 0 2.75rem;
+  padding: 3rem 0 2.25rem;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  /* Vertical bleed only. Any horizontal bleed widens the document and
+     gives narrow viewports a stray sideways scrollbar, even at opacity 0. */
+  inset: -25% 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    transparent 62%
+  );
+}
+
+.hero.is-hot::before {
+  opacity: 1;
 }
 
 .hero-photo {
@@ -146,6 +270,14 @@ p {
   border-radius: 8px;
   object-fit: cover;
   border: 1px solid var(--border);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.hero-photo:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
 }
 
 .hero-body {
@@ -178,7 +310,26 @@ p {
   font-weight: 500;
 }
 
-/* ---------- link row ---------- */
+.lab-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.lab-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  text-decoration: none;
+}
+.lab-link::after {
+  content: "↗";
+  font-size: 0.7em;
+  margin-left: 0.22em;
+  vertical-align: super;
+  opacity: 0.55;
+}
+
+/* ---------- link chips ---------- */
 .links {
   display: flex;
   flex-wrap: wrap;
@@ -196,34 +347,119 @@ p {
   border-radius: 999px;
   color: var(--text-muted);
   background: var(--bg-subtle);
+  transition: transform 0.22s var(--ease), color 0.22s ease,
+    border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
 }
 .link-chip:hover {
   text-decoration: none;
   color: var(--accent);
   border-color: var(--accent);
   background: var(--accent-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 .link-chip svg {
   width: 14px;
   height: 14px;
   flex: 0 0 auto;
+  transition: transform 0.22s var(--ease);
+}
+.link-chip:hover svg {
+  transform: scale(1.15);
 }
 
-/* ---------- interests ---------- */
-.tags {
+/* ---------- tabs ---------- */
+.tabs {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 1.25rem;
+  gap: 0.15rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
 }
 
-.tag {
-  font-size: 0.78125rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  background: var(--accent-soft);
+.tab {
+  appearance: none;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  transition: color 0.25s ease, background 0.25s ease;
+}
+
+.tab:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.tab.is-active {
   color: var(--accent);
-  border: 1px solid transparent;
+}
+
+/* the bar that slides between tabs; positioned from JS so it also
+   tracks correctly when the tab row wraps onto two lines */
+.tab-ink {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform var(--slide-t) var(--ease),
+    width var(--slide-t) var(--ease), opacity 0.3s ease;
+}
+
+.tab-ink.is-ready {
+  opacity: 1;
+}
+
+/* ---------- horizontal deck ---------- */
+.deck {
+  position: relative;
+  overflow: hidden;
+  /* Pulled out by one gutter each side, with the matching padding on the
+     slides rather than here. The clip box then measures exactly one slide,
+     so neighbouring panels cannot peek through, while the hover accent
+     bars still have room inside each slide's own padding. */
+  margin: 0 calc(var(--gutter) * -1);
+  transition: height var(--slide-t) var(--ease);
+}
+
+.deck-track {
+  display: flex;
+  align-items: flex-start;
+  transition: transform var(--slide-t) var(--ease);
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  width: 100%;
+  padding: 0 var(--gutter);
+  opacity: 0.25;
+  transition: opacity var(--slide-t) ease;
+}
+
+.slide.is-active {
+  opacity: 1;
+}
+
+/* before hydration every slide is stacked in normal flow, so the page
+   is complete and readable with JS off */
+.deck.is-static .deck-track {
+  display: block;
+}
+.deck.is-static .slide {
+  opacity: 1;
+}
+.deck.is-static .slide + .slide {
+  margin-top: 2.5rem;
 }
 
 /* ---------- news ---------- */
@@ -240,6 +476,11 @@ p {
   grid-template-columns: 6.5rem 1fr;
   gap: 1rem;
   font-size: 0.9375rem;
+  transition: transform 0.25s var(--ease);
+}
+
+.news li:hover {
+  transform: translateX(3px);
 }
 
 .news-date {
@@ -247,6 +488,11 @@ p {
   font-variant-numeric: tabular-nums;
   font-size: 0.875rem;
   padding-top: 0.08rem;
+  transition: color 0.25s ease;
+}
+
+.news li:hover .news-date {
+  color: var(--accent);
 }
 
 /* ---------- publications ---------- */
@@ -260,9 +506,11 @@ p {
 }
 
 .pub {
+  position: relative;
   display: grid;
   grid-template-columns: 1.75rem 1fr;
   gap: 0.5rem;
+  transition: transform 0.28s var(--ease);
 }
 
 .pub::before {
@@ -274,10 +522,36 @@ p {
   padding-top: 0.18rem;
 }
 
+.pub::after {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.32s var(--ease);
+}
+
+.pub:hover {
+  transform: translateX(4px);
+}
+.pub:hover::after {
+  transform: scaleY(1);
+}
+
 .pub-title {
   font-weight: 550;
   font-size: 1rem;
   line-height: 1.4;
+  transition: color 0.25s ease;
+}
+
+.pub:hover .pub-title {
+  color: var(--accent);
 }
 
 .pub-authors {
@@ -314,11 +588,15 @@ p {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text-muted);
+  transition: transform 0.2s var(--ease), color 0.2s ease,
+    border-color 0.2s ease, background 0.2s ease;
 }
 .pub-link:hover {
   text-decoration: none;
   color: var(--accent);
   border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
 }
 
 .footnote {
@@ -327,16 +605,39 @@ p {
   margin-top: 1.25rem;
 }
 
-/* ---------- entry lists (projects / experience / education) ---------- */
+/* ---------- entry rows (experience / education) ---------- */
 .entries {
   display: grid;
   gap: 1.15rem;
 }
 
 .entry {
+  position: relative;
   display: grid;
   grid-template-columns: 10rem 1fr;
   gap: 1rem;
+  transition: transform 0.28s var(--ease);
+}
+
+.entry::after {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.32s var(--ease);
+}
+
+.entry:hover {
+  transform: translateX(4px);
+}
+.entry:hover::after {
+  transform: scaleY(1);
 }
 
 .entry-period {
@@ -344,12 +645,22 @@ p {
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
   padding-top: 0.15rem;
+  transition: color 0.25s ease;
+}
+
+.entry:hover .entry-period {
+  color: var(--text-muted);
 }
 
 .entry-title {
   font-weight: 550;
   font-size: 0.9375rem;
   line-height: 1.45;
+  transition: color 0.25s ease;
+}
+
+.entry:hover .entry-title {
+  color: var(--accent);
 }
 
 .entry-sub {
@@ -364,28 +675,35 @@ p {
   margin-top: 0.2rem;
 }
 
-/* ---------- skills ---------- */
-.skills {
-  display: grid;
-  gap: 0.6rem;
+/* ---------- interest tags ---------- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
 }
 
-.skill-row {
-  display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1rem;
-  font-size: 0.9375rem;
+.tag {
+  font-size: 0.78125rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid transparent;
+  transition: transform 0.2s var(--ease), background 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.skill-label {
-  color: var(--text-faint);
-  font-size: 0.875rem;
+.tag:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* ---------- footer ---------- */
 .footer {
+  margin-top: 2.5rem;
   border-top: 1px solid var(--border);
-  padding: 2rem 0 3rem;
+  padding: 1.5rem 0 3rem;
   font-size: 0.8125rem;
   color: var(--text-faint);
   display: flex;
@@ -399,7 +717,7 @@ p {
   .hero {
     flex-direction: column;
     gap: 1.25rem;
-    padding-top: 2.5rem;
+    padding-top: 2.25rem;
   }
   .hero-photo {
     width: 110px;
@@ -413,8 +731,7 @@ p {
     margin-left: 0;
   }
   .news li,
-  .entry,
-  .skill-row {
+  .entry {
     grid-template-columns: 1fr;
     gap: 0.15rem;
   }
@@ -425,262 +742,13 @@ p {
   .pub::before {
     display: none;
   }
-  .nav-inner {
-    gap: 0.9rem;
+  .tab {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8125rem;
   }
 }
 
-@media print {
-  .nav,
-  .footer {
-    display: none;
-  }
-  body {
-    font-size: 11pt;
-  }
-}
-
-/* ============================================================
-   Pointer interactions
-   Everything below is decoration only — the page is fully
-   readable and navigable with JS off and motion reduced.
-   ============================================================ */
-
-/* --- hero: cursor-tracked spotlight --- */
-.hero {
-  position: relative;
-  isolation: isolate;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: -25% -12%;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  background: radial-gradient(
-    320px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--accent) 14%, transparent),
-    transparent 62%
-  );
-}
-
-.hero.is-hot::before {
-  opacity: 1;
-}
-
-/* --- photo --- */
-.hero-photo {
-  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1),
-    box-shadow 0.4s ease, border-color 0.4s ease;
-}
-
-.hero-photo:hover {
-  transform: translateY(-4px) scale(1.02);
-  border-color: var(--accent);
-  box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-/* --- link chips --- */
-.link-chip {
-  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1),
-    color 0.22s ease, border-color 0.22s ease, background 0.22s ease,
-    box-shadow 0.22s ease;
-}
-
-.link-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--accent) 70%, transparent);
-}
-
-.link-chip svg {
-  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.link-chip:hover svg {
-  transform: scale(1.15);
-}
-
-/* --- nav: underline grows from the left, active section stays lit --- */
-.nav a:not(.nav-name) {
-  position: relative;
-  padding-bottom: 2px;
-  transition: color 0.22s ease;
-}
-
-.nav a:not(.nav-name)::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1.5px;
-  border-radius: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.nav a:not(.nav-name):hover::after,
-.nav a.is-active::after {
-  transform: scaleX(1);
-}
-
-.nav a.is-active {
-  color: var(--accent);
-}
-
-/* scroll progress hairline riding the bottom of the sticky nav */
-.nav-progress {
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  height: 2px;
-  width: 100%;
-  transform: scaleX(var(--progress, 0));
-  transform-origin: left center;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--accent) 45%, transparent),
-    var(--accent)
-  );
-  pointer-events: none;
-}
-
-/* --- publications --- */
-.pub {
-  position: relative;
-  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.pub::after {
-  content: "";
-  position: absolute;
-  left: -0.85rem;
-  top: 0.15rem;
-  bottom: 0.15rem;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top center;
-  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.pub:hover {
-  transform: translateX(4px);
-}
-
-.pub:hover::after {
-  transform: scaleY(1);
-}
-
-.pub-title {
-  transition: color 0.25s ease;
-}
-
-.pub:hover .pub-title {
-  color: var(--accent);
-}
-
-.pub-link {
-  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1),
-    color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.pub-link:hover {
-  transform: translateY(-1px);
-  background: var(--accent-soft);
-}
-
-/* --- entry rows (projects / experience / education / awards) --- */
-.entry {
-  position: relative;
-  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.entry::after {
-  content: "";
-  position: absolute;
-  left: -0.85rem;
-  top: 0.15rem;
-  bottom: 0.15rem;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top center;
-  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.entry:hover {
-  transform: translateX(4px);
-}
-
-.entry:hover::after {
-  transform: scaleY(1);
-}
-
-.entry-title {
-  transition: color 0.25s ease;
-}
-
-.entry:hover .entry-title {
-  color: var(--accent);
-}
-
-.entry-period {
-  transition: color 0.25s ease;
-}
-
-.entry:hover .entry-period {
-  color: var(--text-muted);
-}
-
-/* --- interest tags --- */
-.tag {
-  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1),
-    background 0.2s ease, border-color 0.2s ease;
-}
-
-.tag:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-}
-
-/* --- news rows --- */
-.news li {
-  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.news li:hover {
-  transform: translateX(3px);
-}
-
-.news li:hover .news-date {
-  color: var(--accent);
-}
-
-.news-date {
-  transition: color 0.25s ease;
-}
-
-/* --- scroll reveal (class only added by JS, so no-JS shows everything) --- */
-.js-reveal {
-  opacity: 0;
-  transform: translateY(12px);
-}
-
-.js-reveal.in-view {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-/* --- accessibility: honour the OS "reduce motion" setting --- */
+/* ---------- accessibility ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -690,26 +758,44 @@ p {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-
-  .js-reveal {
-    opacity: 1;
-    transform: none;
-  }
-
   .hero::before {
     display: none;
   }
+  .slide {
+    opacity: 1;
+  }
 }
 
-/* --- coarse pointers (touch): drop hover-only affordances --- */
 @media (hover: none) {
   .pub:hover,
   .entry:hover,
   .news li:hover {
     transform: none;
   }
-
   .hero::before {
     display: none;
+  }
+}
+
+@media print {
+  .nav,
+  .tabs,
+  .footer {
+    display: none;
+  }
+  .deck {
+    overflow: visible;
+    height: auto !important;
+  }
+  .deck-track {
+    display: block;
+    transform: none !important;
+  }
+  .slide {
+    opacity: 1;
+    page-break-inside: avoid;
+  }
+  body {
+    font-size: 11pt;
   }
 }

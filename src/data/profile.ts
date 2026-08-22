@@ -9,6 +9,7 @@ export const profile = {
   role: "M.S. Student in Artificial Intelligence",
   affiliation: "Kim Jaechul Graduate School of AI, KAIST",
   lab: "BioImaging, Signal Processing & machine Learning Lab (BISPL)",
+  labUrl: "https://bispl-website.github.io",
   advisor: "Jong Chul Ye",
   location: "Seoul, Korea",
   email: "zeromin03@kaist.ac.kr",
@@ -134,52 +135,6 @@ export const publications: Publication[] = [
   },
 ];
 
-export type Project = {
-  name: string;
-  org: string;
-  period: string;
-  note?: string;
-};
-
-export const projects: Project[] = [
-  {
-    name: "Self-Distilled 3D Reconstruction",
-    org: "BISPL, KAIST",
-    period: "Jun. 2026 – Present",
-  },
-  {
-    name: "WAM & VLA Action RoPE",
-    org: "BISPL, KAIST",
-    period: "Jun. 2026 – Present",
-  },
-  {
-    name: "Medical Foundational Model",
-    org: "BISPL, KAIST",
-    period: "Aug. 2025 – Mar. 2026",
-  },
-  {
-    name: "ULF to High-field MRI Image Enhancement",
-    org: "BISPL, KAIST",
-    period: "Jun. 2025 – Present",
-  },
-  {
-    name: "Short Movie Using 3D Gaussian Splatting",
-    org: "Korea University",
-    period: "Nov. 2025 – Dec. 2025",
-  },
-  {
-    name: "Kaist Map",
-    org: "KAIST Madcamp",
-    period: "Dec. 2024 – Present",
-    note: "Backend developer of the Kaist Map app.",
-  },
-  {
-    name: "Execution Time Analysis of Kubernetes Scheduler Algorithms in Homogeneous and Heterogeneous Environments",
-    org: "Distributed and Cloud Computing Lab, Korea University",
-    period: "Jul. 2024 – Mar. 2025",
-  },
-];
-
 export type Entry = {
   period: string;
   title: string;
@@ -226,36 +181,5 @@ export const experience: Entry[] = [
     org: "Distributed and Cloud Computing Lab, Korea University",
     location: "Seoul, Korea",
     note: "Network latency in Kubernetes.",
-  },
-];
-
-export type Award = { date: string; title: string; org: string; note?: string };
-
-export const awards: Award[] = [
-  {
-    date: "Jan. 2025",
-    title: "Academic Excellence Award",
-    org: "Korea University",
-  },
-  {
-    date: "2024 – 2025",
-    title: "Semester Highest Honors (×3)",
-    org: "Korea University",
-    note: "Feb. 2025, Aug. 2024, Feb. 2024",
-  },
-  {
-    date: "Aug. 2023",
-    title: "Semester Honors",
-    org: "Korea University",
-  },
-];
-
-export const skills: { label: string; items: string }[] = [
-  { label: "Languages", items: "Python, C++" },
-  { label: "Frameworks", items: "PyTorch" },
-  { label: "Simulation", items: "MuJoCo, Isaac Sim, LIBERO" },
-  {
-    label: "Models",
-    items: "Vision-Language-Action (VLA), diffusion models, video generation models",
   },
 ];
