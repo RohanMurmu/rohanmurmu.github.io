@@ -24,13 +24,11 @@
   --grid-opacity: 0.05;
   --noise-opacity: 0.028;
 
-  /* Cursor light: a tight core over a wide halo. On the near-white ground a
-     plain accent bloom reads best — additive blending would just wash out. */
+  /* Cursor light: a single tight bloom. On the near-white ground a plain
+     accent tint reads best — additive blending would just wash out. */
   --glow-core: color-mix(in srgb, var(--accent) 13%, transparent);
-  --glow-halo: color-mix(in srgb, var(--accent-2) 7%, transparent);
   --glow-blend: normal;
   --glow-core-r: 130px;
-  --glow-halo-r: 360px;
 
   --measure: 46rem;
   --fig-w: 11rem;
@@ -66,7 +64,6 @@
 
     /* on the dark ground the light is white and genuinely additive */
     --glow-core: rgba(255, 255, 255, 0.085);
-    --glow-halo: color-mix(in srgb, var(--accent) 20%, transparent);
     --glow-blend: plus-lighter;
   }
 }
@@ -90,7 +87,6 @@
 
   /* on the dark ground the light is white and genuinely additive */
   --glow-core: rgba(255, 255, 255, 0.085);
-  --glow-halo: color-mix(in srgb, var(--accent) 20%, transparent);
   --glow-blend: plus-lighter;
 }
 
@@ -243,9 +239,8 @@ p {
    clientX/clientY map straight onto it and the light stays under the pointer
    however far the page has scrolled.
 
-   Two stacked gradients rather than one: a small bright core for presence and
-   a wide faint halo for falloff. Interactions.tsx eases --gx/--gy toward the
-   pointer instead of snapping, so the light trails slightly behind it. */
+   Interactions.tsx eases --gx/--gy toward the pointer instead of snapping,
+   so the light trails slightly behind it. */
 .cursor-glow {
   position: absolute;
   inset: 0;
@@ -253,17 +248,11 @@ p {
   opacity: 0;
   transition: opacity 700ms ease;
   mix-blend-mode: var(--glow-blend);
-  background:
-    radial-gradient(
-      var(--glow-core-r) circle at var(--gx, 50%) var(--gy, 50%),
-      var(--glow-core),
-      transparent 68%
-    ),
-    radial-gradient(
-      var(--glow-halo-r) circle at var(--gx, 50%) var(--gy, 50%),
-      var(--glow-halo),
-      transparent 72%
-    );
+  background: radial-gradient(
+    var(--glow-core-r) circle at var(--gx, 50%) var(--gy, 50%),
+    var(--glow-core),
+    transparent 72%
+  );
 }
 
 /* raised only once the pointer has moved, so it never blooms at 50%/50% on
