@@ -495,10 +495,20 @@ p {
 .pub-fig img {
   display: block;
   width: 100%;
+  /* The source figures range from 1.37:1 to 1.97:1. Letting each keep its own
+     ratio left the column ragged, so every teaser gets the same box and is
+     fitted inside it — `contain`, never `cover`, because cropping a diagram
+     loses the content. The figures are drawn on white, so the letterboxing
+     reads as part of the card rather than as padding. */
+  /* `height: auto` is load-bearing: the width/height attributes on the tag
+     become presentational hints, and a fixed height hint would win over
+     aspect-ratio and leave each box its own height again. */
   height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  padding: 4px;
   border-radius: 6px;
   border: 1px solid var(--border);
-  /* the teasers are diagrams drawn on white; keep that ground in both themes */
   background: #fff;
   transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
