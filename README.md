@@ -49,9 +49,14 @@ Set `scholar` or `linkedin` in `profile`. Empty string = link hidden.
 
 ### Updating the CV PDF
 
+`main.pdf` (built from `../main.tex`) is the current CV. Recompile it, then:
+
 ```sh
-cp ../cv_YoungminKim.pdf public/cv_YoungminKim.pdf
+cp ../main.pdf public/cv_YoungminKim.pdf
 ```
+
+The published filename stays `cv_YoungminKim.pdf` so the link on the site keeps working and the
+download lands with a meaningful name.
 
 ## How the page behaves
 
